@@ -54,7 +54,7 @@ def commit():
     if response.status_code == 200:
         commit_json = response.json()
         print(f"[bold yellow]{highlight_keywords(commit_json['subject'])}[/bold yellow]")
-        print(f"[dim yellow]{highlight_keywords(commit_json['description'])}[/dim yellow]")
+        print(f"[yellow]{highlight_keywords(commit_json['description'])}[/yellow]")
 
         commit_choice = questionary.confirm("Do you want to commit with this message?").ask()
         if commit_choice:
