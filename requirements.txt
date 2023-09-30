@@ -1,0 +1,7 @@
+GitPython
+linkify-it-py
+mdit-py-plugins
+pip
+setuptools
+swiftly-sys
+textual
