@@ -1,76 +1,65 @@
-import git
+import subprocess
+import re
 import questionary
 from rich import print
 
-def get_current_branch(repo):
-    """Get the name of the current Git branch."""
-    return repo.active_branch.name
+def run_command(command, input=None, capture_output=True, text=True, check=True):
+    try:
+        result = subprocess.run(command, input=input, capture_output=capture_output, text=text, check=check)
+        return result.stdout
+    except subprocess.CalledProcessError as e:
+        print(f"[red]Command failed: {e}[/red]")
+        exit(1)
 
-def get_uncommitted_changes(repo):
-    """Check for uncommitted changes in the repository."""
-    return repo.is_dirty()
+def temp_commit():
+    uncommitted_changes = run_command(["git", "status", "--porcelain"])
+    if uncommitted_changes:
+        run_command(["git", "add", "-A"])
+        run_command(["git", "commit", "-m", "TEMP_COMMIT"])
 
-def temporary_commit(repo):
-    """Create a temporary commit to save changes."""
-    repo.git.add(A=True)
-    repo.git.commit(m="TEMP_COMMIT")
+def undo_temp_commit():
+    last_commit_message = run_command(["git", "log", "-1", "--pretty=%B"]).strip()
+    if last_commit_message == "TEMP_COMMIT":
+        run_command(["git", "reset", "HEAD~"])
 
-def undo_temporary_commit(repo):
-    """Undo the last temporary commit."""
-    last_commit_message = repo.head.commit.message
-    if last_commit_message.strip() == "TEMP_COMMIT":
-        repo.git.reset("HEAD~")
+def validate_branch_name(branch_name):
+    # Assuming a simple naming convention for demonstration
+    if re.match(r'^[a-zA-Z0-9_-]+$', branch_name):
+        return True
+    print("[red]Invalid branch name![/red]")
+    return False
 
-def switch_branch(repo=git.Repo('.'), branch_name=""):
-    """Switch to a different Git branch."""
-    if get_uncommitted_changes(repo):
-        temporary_commit(repo)
-    
-    branches = [str(branch) for branch in repo.branches]
-    branches.append("Make a new branch")
-    
-    if not branch_name:
-        branch_name = questionary.select("Select a branch to switch to:", choices=branches).ask()
-    
-    if branch_name == "Make a new branch":
-        new_branch(repo)
-        return
-    
-    if branch_name not in branches:
-        create_new = questionary.confirm(f"Branch {branch_name} doesn't exist. Do you want to create it?").ask()
-        if create_new:
-            new_branch(repo, branch_name)
-            return
-    
-    repo.git.checkout(branch_name)
-    undo_temporary_commit(repo)
-
-    
-def list_branches(repo=git.Repo('.')):
-    """List all branches in the repository."""
-    current_branch = get_current_branch(repo)
-    branches = [str(branch) for branch in repo.branches]
-    print("[cyan]Available branches:[/cyan]")
+def list_branches():
+    branches = run_command(["git", "branch", "--list"]).split("\n")
     for branch in branches:
-        if branch == current_branch:
-            print(f"- [white bold]{branch}[/white bold] (current)")
-        else:
-            print(f"- [white]{branch}[/white]")
+        print(branch)
 
-def new_branch(repo=git.Repo('.'), branch_name=""):
-    """Create a new Git branch."""
-    if get_uncommitted_changes(repo):
-        temporary_commit(repo)
+def switch_branch():
+    temp_commit()
+    branches = run_command(["git", "branch", "--list"]).split("\n")
+    branches = [branch.strip() for branch in branches if branch]  # cleaning up any whitespace and empty strings
+    branches.append("Create a new branch")
     
+    branch_selection = questionary.select(
+        "Choose a branch to switch to or create a new one:",
+        choices=branches
+    ).ask()
+    
+    if branch_selection == "Create a new branch":
+        new_branch()
+    else:
+        run_command(["git", "checkout", branch_selection])
+        undo_temp_commit()
+
+
+def new_branch(branch_name=""):
+    temp_commit()
     if not branch_name:
-        branch_name = questionary.text("Enter the new branch name: ").ask()
-    
-    branches = [str(branch) for branch in repo.branches]
-    if branch_name in branches:
+        branch_name = questionary.text("Enter the new branch name: ", validate=validate_branch_name).ask()
+    if branch_name in run_command(["git", "branch", "--list"]):
         switch = questionary.confirm(f"Branch {branch_name} already exists. Do you want to switch to it?").ask()
         if switch:
-            switch_branch(repo, branch_name)
+            switch_branch(branch_name)
             return
-    
-    repo.git.checkout(b=branch_name)
-    undo_temporary_commit(repo)
+    run_command(["git", "checkout", "-b", branch_name])
+    undo_temp_commit()
