@@ -1,5 +1,6 @@
 import git
 import questionary
+from rich import print
 
 def get_current_branch(repo):
     """Get the name of the current Git branch."""
@@ -37,6 +38,17 @@ def switch_branch(repo=git.Repo('.'), branch_name=""):
     
     repo.git.checkout(branch_name)
     undo_temporary_commit(repo)
+    
+def list_branches(repo=git.Repo('.')):
+    """List all branches in the repository."""
+    current_branch = get_current_branch(repo)
+    branches = [str(branch) for branch in repo.branches]
+    print("[blue]Available branches:[/blue]")
+    for branch in branches:
+        if branch == current_branch:
+            print(f"- [white bold]{branch}[/white bold] (current)")
+        else:
+            print(f"- [white]{branch}[/white]")
 
 def new_branch(repo=git.Repo('.'), branch_name=""):
     """Create a new Git branch."""
