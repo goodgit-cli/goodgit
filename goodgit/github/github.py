@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import time
+import webbrowser
 from rich import print
 from urllib.parse import parse_qs
 
@@ -50,6 +51,16 @@ def create_github_repo(access_token, repo_name, is_private):
     else:
         print(f"Failed to create repository. HTTP Status Code: {response.status_code}. Raw response: {response.text}")
         return None
+    
+def get_github_username(token):
+    url = "https://api.github.com/user"
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    r = requests.get(url, headers=headers)
+    if r.status_code == 200:
+        return r.json().get("name", "Unknown")
+    else:
+        print("Failed to fetch GitHub username.")
+        return None
 
 def get_new_access_token(email):
     client_id = "5f4d455043e52e4de32c"
@@ -69,6 +80,8 @@ def get_new_access_token(email):
     interval = int(data['interval'][0])
 
     print(f"Please go to [bold yellow]{verification_uri}[/bold yellow] and enter this code: [bold yellow]{user_code}[/bold yellow]")
+    time.sleep(2)
+    webbrowser.open(verification_uri)
 
     timeout_counter = 0
     token_url = "https://github.com/login/oauth/access_token"
@@ -94,3 +107,12 @@ def get_new_access_token(email):
 
     print("Failed to get access token within the allowed time.")
     return None
+
+
+def add_ssh_key_to_github(token, title, key):
+    url = "https://api.github.com/user/keys"
+    headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+    payload = {"title": title, "key": key}
+    r = requests.post(url, headers=headers, json=payload)
+    if r.status_code == 201:
+        print("SSH key added successfully.")
