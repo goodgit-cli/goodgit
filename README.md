@@ -1,0 +1,3 @@
+# Welcome to GoodGit
+### About and why?:
+Git is a tool we touch daily. As powerful as it is, it's power is limited to only 3 people, That long bearded introvert who knows everything about technology, that manager who really likes your long bearded guy, and Linus Torvalds. For the rest of us, there is GoodGit. The good version of Git. Use it by using `gg`. Well, everything you know about git, works! Just the way you are used to. But there is a learing curve. You will have to learn to `love yourself`.
