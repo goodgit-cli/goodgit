@@ -1,4 +1,5 @@
 import git
+from .add import git_unadd
 
 def uncommit():
     try:
@@ -14,6 +15,7 @@ def uncommit():
             
             # Perform the soft reset
             repo.git.reset("--soft", "HEAD~1")
+            git_unadd()
             
             print(f"Successfully undone '{last_commit_message}'.")
         elif num_commits == 1:
@@ -22,6 +24,7 @@ def uncommit():
             
             # Delete the last commit
             repo.git.update_ref("-d", "HEAD")
+            git_unadd()
             
             print(f"Successfully deleted the only commit '{last_commit_message}'.")
         else:
