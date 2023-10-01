@@ -27,8 +27,14 @@ def switch_branch(repo=git.Repo('.'), branch_name=""):
         temporary_commit(repo)
     
     branches = [str(branch) for branch in repo.branches]
+    branches.append("Make a new branch")
+    
     if not branch_name:
         branch_name = questionary.select("Select a branch to switch to:", choices=branches).ask()
+    
+    if branch_name == "Make a new branch":
+        new_branch(repo)
+        return
     
     if branch_name not in branches:
         create_new = questionary.confirm(f"Branch {branch_name} doesn't exist. Do you want to create it?").ask()
@@ -38,12 +44,13 @@ def switch_branch(repo=git.Repo('.'), branch_name=""):
     
     repo.git.checkout(branch_name)
     undo_temporary_commit(repo)
+
     
 def list_branches(repo=git.Repo('.')):
     """List all branches in the repository."""
     current_branch = get_current_branch(repo)
     branches = [str(branch) for branch in repo.branches]
-    print("[blue]Available branches:[/blue]")
+    print("[cyan]Available branches:[/cyan]")
     for branch in branches:
         if branch == current_branch:
             print(f"- [white bold]{branch}[/white bold] (current)")

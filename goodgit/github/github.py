@@ -63,6 +63,10 @@ def get_github_username(token):
         return None
 
 def get_new_access_token(email):
+    access_token = retrieve_github_access_token(email)
+    if access_token:
+        return access_token
+    
     client_id = "5f4d455043e52e4de32c"
     device_code_url = "https://github.com/login/device/code"
     payload = {"client_id": client_id, "scope": "repo write:public_key read:public_key"}

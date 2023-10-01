@@ -3,19 +3,13 @@ import questionary
 import subprocess
 from typing import Optional, List
 
-def validate_git_repo() -> bool:
-    try:
-        subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], check=True)
-        return True
-    except subprocess.CalledProcessError:
-        print("[bold red]You're not in a Git repository. Please navigate to one and try again. Or run git init :)[/bold red]")
-        return False
+from goodgit.utils import is_git_repo
 
 def ask_for_options(prompt: str, choices: List[str]) -> List[str]:
     return questionary.checkbox(prompt, choices=choices).ask() or []
 
 def git_grep_interactive():
-    if not validate_git_repo():
+    if not is_git_repo():
         return
 
     search_term = questionary.text("What is the search term?").ask()
