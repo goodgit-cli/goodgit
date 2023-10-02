@@ -1,7 +1,7 @@
 import click
 import questionary
 from goodgit.branch import list_branches, new_branch, switch_branch
-from goodgit.commit import add, commit as ggcommit, push_to_remote, uncommit
+from goodgit.commit import add, commit as ggcommit, push_to_remote, uncommit as gguncommit
 from goodgit.merge import merge_branches
 from goodgit.publish import publish
 from goodgit.search import git_grep_interactive
@@ -17,16 +17,18 @@ def cli():
 @cli.command()
 def branch():
     list_branches()
+    
+    choices = ['Nope, that\'s it', 'Create a new branch', 'Switch branch']
 
     selection = questionary.select(
-        "What do you wanna do next?",
-        choices=['Create a new branch', 'Switch Branches', 'Nothing']
+        "Anything else?",
+        choices=choices
     ).ask()
 
-    if selection == 'Create a new branch':
+    if selection == choices[1]:
         new_branch()
 
-    elif selection == 'Switch Branches':
+    elif selection == choices[2]:
         switch_branch()
     
     else:
@@ -40,12 +42,11 @@ def commit():
 
 @cli.command()
 def uncommit():
-    uncommit()
+    gguncommit()
 
 @cli.command()
 def merge():
     merge_branches()
-
 
 @cli.command()
 def publish():

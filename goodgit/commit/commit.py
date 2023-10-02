@@ -70,6 +70,3 @@ def commit():
             print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
     else:
         print("[red]API call failed. Exiting.[/red]")
-
-if __name__ == "__main__":
-    commit()

@@ -28,14 +28,14 @@ def apply_timetravel():
         current_branch = read_from_file(config_file)
         commit = next(repo.iter_commits())
         commit_hex = commit.hexsha
-        commit_message = commit.message.strip()
+        commit_message = commit.message.strip().split("\n")[0]
         
         should_proceed = questionary.confirm(f"Do you want bring the commit with message: '{commit_message}' to the present?", default=False).ask()
         if not should_proceed:
             print("[red]Time travel cancelled.[/red]")
             exit()
 
-        new_branch_name = f'timetravelled_from_{slugify(commit_message)}_{commit_hex[:7]}'
+        new_branch_name = f'timetravelled_from_{commit_hex[:7]}'
         repo.git.branch(new_branch_name, commit_hex)
         repo.git.checkout(current_branch)
 

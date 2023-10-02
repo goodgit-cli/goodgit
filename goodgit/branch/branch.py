@@ -30,9 +30,14 @@ def validate_branch_name(branch_name):
     return False
 
 def list_branches():
-    branches = run_command(["git", "branch", "--list"]).split("\n")
+    result = subprocess.run(["git", "branch", "--list"], stdout=subprocess.PIPE, text=True)
+    branches = result.stdout.split("\n")
+    print("[orange1]All Branches[/orange1]")
     for branch in branches:
-        print(branch)
+        if branch.startswith('*'):
+            print(f"[bold]{branch} (current)[/bold]")  # Bold the current branch
+        else:
+            print(branch)
 
 def switch_branch():
     temp_commit()
