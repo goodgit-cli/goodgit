@@ -36,19 +36,25 @@ def apply_timetravel():
             exit()
 
         new_branch_name = f'timetravelled_from_{commit_hex[:7]}'
-        # Stash uncommitted changes
-        repo.git.stash()
+        
+        # Check for uncommitted changes
+        uncommitted_changes = repo.is_dirty(untracked_files=True)
+        
+        if uncommitted_changes:
+            # Stash uncommitted changes
+            repo.git.stash()
         
         repo.git.branch(new_branch_name, commit_hex)
         
         # Checkout to the new branch
         repo.git.checkout(new_branch_name)
         
-        # Apply stashed changes
-        repo.git.stash('apply')
-        
-        # Drop the latest stash to keep the stash list clean
-        repo.git.stash('drop')
+        if uncommitted_changes:
+            # Apply stashed changes
+            repo.git.stash('apply')
+            
+            # Drop the latest stash to keep the stash list clean
+            repo.git.stash('drop')
         
         repo.git.checkout(current_branch)
 
