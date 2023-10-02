@@ -5,3 +5,4 @@ pip
 setuptools
 swiftly-sys
 textual
+click
