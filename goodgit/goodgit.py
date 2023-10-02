@@ -1,7 +1,7 @@
 import click
 import questionary
 from goodgit.branch import list_branches, new_branch, switch_branch
-from goodgit.commit import add, commit as ggcommit, push, uncommit
+from goodgit.commit import add, commit as ggcommit, push_to_remote, uncommit
 from goodgit.merge import merge_branches
 from goodgit.publish import publish
 from goodgit.search import git_grep_interactive
