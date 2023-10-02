@@ -19,7 +19,7 @@ def apply_timetravel():
     config_file = os.path.join(temp_dir, 'goodgit_time_travel_config.conf')
 
     # Initialize GitPython repo object
-    repo = git.Repo(os.getcwd())
+    repo = git.Repo(".")
 
     # Check if HEAD is detached
     is_detached = repo.head.is_detached
@@ -55,6 +55,10 @@ def apply_timetravel():
             
             # Drop the latest stash to keep the stash list clean
             repo.git.stash('drop')
+        
+        # create a commit to make sure all changes are taken to the present
+        repo.git.add('-A')
+        repo.git.commit('--allow-empty', '-m', f'Unsaved code from {commit_message}')
         
         repo.git.checkout(current_branch)
 
