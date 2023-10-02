@@ -1,3 +1,3 @@
 from .goodgit import *
 
-cli()
+main()

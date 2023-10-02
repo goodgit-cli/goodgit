@@ -1,11 +1,13 @@
-import subprocess
-import requests
+import re
+import git
 import json
+import requests
+import subprocess
 import questionary
 from rich import print
-from goodgit.utils import is_git_repo
+
 from .add import git_unadd
-import re
+from goodgit.utils import is_git_repo
 
 def get_git_diff():
     """
@@ -33,6 +35,11 @@ def commit():
     """
     Main function to handle the git commit operation.
     """
+    repo = git.Repo(".")
+    if not repo.is_dirty():
+        print("[green]All clean, Nothing to commit[/green]")
+        return False
+    
     # Get the git diff
     git_diff = get_git_diff()
     
@@ -62,11 +69,15 @@ def commit():
             if result.returncode != 0:
                 git_unadd()
                 print(f"[red]Commit failed: {result.stderr}[/red]")
+                return False
             else:
                 print("[green]Commit successful![/green]")
+                return True
                 
         else:
             git_unadd()
             print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
+            return False
     else:
         print("[red]API call failed. Exiting.[/red]")
+        return False

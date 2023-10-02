@@ -1,9 +1,15 @@
 import git
 import questionary
+from rich import print
 
 def push_to_remote(repo_path='.'):
     """Push changes to a remote Git repository with user confirmation."""
     repo = git.Repo(repo_path)
+    
+    # Check if it's a remote repository
+    if not repo.remotes:
+        print("[yellow]This is not a remote repository, can't push.[/yellow]")            
+        return "Not Remote"
     
     # Get the current branch name
     current_branch = repo.active_branch.name
@@ -21,19 +27,22 @@ def push_to_remote(repo_path='.'):
             # Get all local branches
             branches = [str(branch) for branch in repo.branches]
             branch_name = questionary.select("Which branch do you want to push?", choices=branches).ask()
+            # Confirm with the user
+            confirm_push = questionary.confirm(f"Are you sure you want to push code from {branch_name}?").ask()
+            
         else:
             print("Push operation cancelled.")
-            return
-    
-    # Confirm with the user
-    confirm_push = questionary.confirm(f"Are you sure you want to push code from {branch_name}?").ask()
+            return False
     
     if confirm_push:
         try:
             # Push changes
             repo.git.push('origin', branch_name)
             print(f"Successfully pushed to origin/{branch_name}")
+            return True
         except git.GitCommandError as e:
             print(f"Failed to push to origin/{branch_name}. Error: {e}")
+            return False
     else:
         print("Push operation cancelled.")
+        return False

@@ -1,9 +1,11 @@
-click
-GitPython
+docopt
+-e
 linkify-it-py
 mdit-py-plugins
 pip
 setuptools
+six
 swiftly-sys
+termcolor
 textual
 wheel

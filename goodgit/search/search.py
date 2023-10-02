@@ -46,7 +46,7 @@ def git_grep_interactive():
     and_terms = questionary.text("AND terms (separate by comma):").ask() if "AND terms" in options else None
     or_terms = questionary.text("OR terms (separate by comma):").ask() if "OR terms" in options else None
 
-    print("[bold yellow]Performing your search... Hang tight![/bold yellow]")
+    print("[bold orange1]Performing your search... Hang tight![/bold orange1]")
 
     try:
         result = git_grep(

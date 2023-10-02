@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='goodgit',
-    version='0.1.5',
+    version='0.1.6',
     packages=find_packages(),
     description='Git; for humans',
     long_description=long_description,
@@ -19,11 +19,11 @@ setup(
         'GitPython',
         'questionary',
         'rich',
-        'click',  # Add click here
+        'docopt',
     ],
     entry_points={
         'console_scripts': [
-            'gg = goodgit.goodgit:cli',
+            'gg = goodgit.goodgit:main',
         ],
     },
 )
