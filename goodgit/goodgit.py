@@ -32,7 +32,7 @@ from goodgit.search import git_grep_interactive
 from goodgit.publish import publish as ggpublish
 from goodgit.branch import list_branches, new_branch, switch_branch
 from goodgit.timetravel import timetravel as ggtimetravel, apply_timetravel
-from goodgit.commit import add, commit as ggcommit, push_to_remote, uncommit as gguncommit
+from goodgit.commit import add as ggadd, commit as ggcommit, push_to_remote, uncommit as gguncommit
 
 class GoodGit:
     def branch(self):
@@ -54,9 +54,7 @@ class GoodGit:
         else:
             return
         
-    def commit(self):
-        add()
-        # check if commit success
+    def commitpush(self):
         if ggcommit():
             remote = push_to_remote()
             # if not remote, then ask if user wants to publish
@@ -65,6 +63,21 @@ class GoodGit:
                 if to_publish:
                     # publish to github
                     ggpublish()
+    
+    def add(self, *args):
+        if args[0] in ['*', '.']:
+            # The wild route: add all files
+            ggadd("*")
+        else:
+            # The tailored route: add specified files
+            ggadd(list(args))
+            
+        self.commitpush()
+        
+    def commit(self):
+        ggadd()
+        # check if commit success
+        self.commitpush()
 
     def uncommit(self):
         gguncommit()
@@ -109,6 +122,3 @@ def main():
         func(*cmd_args)
     else:
         gg.git(command, *cmd_args)
-
-if __name__ == '__main__':
-    main()

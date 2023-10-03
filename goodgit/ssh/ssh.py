@@ -243,3 +243,8 @@ def add_ssh_account():
                     update_ssh_config(username)  # it adds the new account to SSH config
 
     list_accounts(load_accounts_from_config())  # Reload accounts to include the newly added one
+    
+    try:
+        return email + " (github.com)"
+    except:
+        return None

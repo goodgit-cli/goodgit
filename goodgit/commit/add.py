@@ -1,12 +1,13 @@
 import subprocess
 
 import questionary
-from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.keys import Keys
-from prompt_toolkit.filters import has_selection, Condition
+from rich import print
 from pathlib import Path
+from prompt_toolkit.keys import Keys
+from prompt_toolkit import PromptSession
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.filters import has_selection, Condition
+from prompt_toolkit.completion import Completer, Completion
 
 def git_unadd():
     """
@@ -102,6 +103,8 @@ def add(files=None):
         else:
             # Use path autocomplete for ease of use
             files = get_files_to_add()
+    else:
+        print("[white]Adding files[/white]")
     
     # Execute the 'git add' command
     git_add(files)

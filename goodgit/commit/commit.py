@@ -4,6 +4,7 @@ import json
 import requests
 import subprocess
 import questionary
+from halo import Halo
 from rich import print
 
 from .add import git_unadd
@@ -29,7 +30,7 @@ def highlight_keywords(text):
     Returns:
         str: The text with highlighted keywords.
     """
-    return re.sub(r"`(.*?)`", "[bold yellow]\\1[/bold yellow]", text)
+    return re.sub(r"`(.*?)`", "[bold white]\\1[/bold white]", text)
 
 def commit():
     """
@@ -39,6 +40,10 @@ def commit():
     if not repo.is_dirty():
         print("[green]All clean, Nothing to commit[/green]")
         return False
+    
+    spinner = Halo(text='Baking your commit', spinner='moon')
+    
+    spinner.start()
     
     # Get the git diff
     git_diff = get_git_diff()
@@ -56,12 +61,14 @@ def commit():
 
     reqUrl = "https://orca-app-qmx5i.ondigitalocean.app/api/commit/"
     response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+    
+    spinner.stop()
 
     # Handle the API response
     if response.status_code == 200:
         commit_json = response.json()
-        print(f"[bold yellow]{highlight_keywords(commit_json['subject'])}[/bold yellow]")
-        print(f"[yellow]{highlight_keywords(commit_json['description'])}[/yellow]")
+        print(f"[bold orange1]{highlight_keywords(commit_json['subject'])}[/bold orange1]")
+        print(f"[white]{highlight_keywords(commit_json['description'])}[/white]")
 
         commit_choice = questionary.confirm("Do you want to commit with this message?").ask()
         if commit_choice:

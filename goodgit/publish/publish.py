@@ -5,9 +5,10 @@ import os
 import subprocess
 from urllib.parse import parse_qs
 from questionary import text, select, confirm
-from rich import print as rprint
+from rich import print
 from rich.console import Console
 
+from goodgit.ssh import add_ssh_account
 from goodgit.utils import check_git_remote
 from goodgit.commit import push_to_remote, add, commit
 from goodgit.github import fetch_github_username, retrieve_github_access_token, create_github_repo, get_new_access_token
@@ -49,18 +50,14 @@ def handle_existing_git_remote():
 def select_email_from_accounts(accounts):
     """Select an email account to use for GitHub operations."""
     if len(accounts) == 0:
-        # Check if 'github.com' exists in known hosts
-        known_hosts_path = os.path.expanduser("~/.ssh/known_hosts")
-        if os.path.exists(known_hosts_path):
-            with open(known_hosts_path, 'r') as f:
-                if 'github.com' in f.read():
-                    selected_email = text("Please enter your GitHub email address:").ask()
-                    if selected_email:
-                        return selected_email
+        print("[red]No accounts found[/red]")
+        email = add_ssh_account()
+        if email:
+            return email
+        else:
+            print("[bold orange1]We weren't prepared for you to say no :([/bold orange1]")
+            exit(1)
                     
-        console.print("[bold red]No accounts found and 'github.com' not in known hosts. Exiting.[/bold red]")
-        # TODO: create account if it doesn't exist
-        return None
     elif len(accounts) == 1:
         selected_email = accounts[0]['email']
         console.print(f"Using the only available account: [bold green]{selected_email}[/bold green]")
@@ -91,12 +88,11 @@ def push_to_repo(repo_name, username, selected_email, host_mapping):
 
 def create_and_push_new_repo(selected_email, host_mapping):
     """Create a new GitHub repository and push the local code to it."""
-    access_token = retrieve_github_access_token(selected_email)
+    
+    access_token = get_new_access_token(selected_email)
     if not access_token:
-        access_token = get_new_access_token(selected_email)
-        if not access_token:
-            console.print("[bold red]Failed to get access token within the allowed time. Exiting.[/bold red]")
-            return
+        console.print("[bold red]Failed to get access token within the allowed time. Exiting.[/bold red]")
+        return
 
     username = fetch_github_username(access_token)
     if not username:

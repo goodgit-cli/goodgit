@@ -19,6 +19,7 @@ def push_to_remote(repo_path='.'):
     
     if push_current:
         branch_name = current_branch
+        confirm_push = True
     else:
         # Ask if the user wants to push another branch
         push_another = questionary.confirm("Do you want to push code from another branch?").ask()

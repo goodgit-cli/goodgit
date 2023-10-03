@@ -102,6 +102,7 @@ def get_new_access_token(email):
             data = parse_qs(response.text)
             if 'access_token' in data:
                 access_token = data['access_token'][0]
+                email += " (github.com)"
                 store_github_access_token(access_token, email)
                 print(f"Your access token is: {access_token}")
                 return access_token
