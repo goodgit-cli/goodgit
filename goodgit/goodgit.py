@@ -81,8 +81,7 @@ class GoodGit:
     
     def add(self, *args):
         if len(args) == 0:
-            print("[dark_orange]Use [bold dark_orange]'gg add'[/bold dark_orange] as [bold dark_orange]'gg add .'[/bold dark_orange] or [bold dark_orange]'gg add <file1> <file2> ...'[/bold dark_orange][/dark_orange]")
-            return
+            ggadd()
         if args[0] in ['*', '.']:
             # The wild route: add all files
             ggadd("*")
