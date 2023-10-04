@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'gg = goodgit.goodgit:main',
+            'goodgit = goodgit.goodgit:main',
         ],
     },
 )

@@ -2,6 +2,14 @@ import subprocess
 from rich import print
 
 def initialize_git_repo():
+    """
+    This function initializes a new git repository and renames the default branch to "main".
+
+    It uses the subprocess module to run the 'git init' and 'git branch -M main' commands.
+
+    Returns:
+        True if the repository is successfully initialized, False otherwise.
+    """
     try:
         # Initialize a new git repository
         subprocess.run(['git', 'init'], check=True, text=True)

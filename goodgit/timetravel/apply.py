@@ -85,7 +85,7 @@ def apply_timetravel():
 
         repo.git.branch('-D', new_branch_name)
 
-        print("[green]Time travel complete! The old commit state is now the latest commit.[/green]")
+        print(f"[green]Time travel complete! '{commit_message}' is now the latest commit.[/green]")
     else:
-        print("[yellow]You're already on the latest commit. No need to time travel![/yellow]")
+        print("[orange1]You're already on the latest commit. No need to time travel![/orange1]")
 

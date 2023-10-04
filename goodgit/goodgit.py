@@ -17,7 +17,8 @@ Commands:
     merge       Merge branches.
     publish     Publish the repository to GitHub
     search      Search the git repository.
-    setup       Setup SSH in 10secs
+    setup       Setup SSH in 10secs. Multiple accounts supported
+    clone       Clone a repo from an account you want
     web         Open repository in web browser.
     timetravel  Time travel in your commits
     tt          Time travel in your commits
@@ -36,7 +37,7 @@ from goodgit.web import gg_web
 from goodgit.ssh import add_ssh_account
 from goodgit.merge import merge_branches
 from goodgit.search import git_grep_interactive
-from goodgit.publish import publish as ggpublish
+from goodgit.publish import publish as ggpublish, clone_repo
 from goodgit.branch import list_branches, new_branch, switch_branch
 from goodgit.timetravel import timetravel as ggtimetravel, apply_timetravel
 from goodgit.commit import add as ggadd, commit as ggcommit, push_to_remote, uncommit as gguncommit, initialize_git_repo
@@ -63,6 +64,9 @@ class GoodGit:
         
     def init(self):
         initialize_git_repo()
+        
+    def clone(self, repo_link=None):
+        clone_repo(repo_link)
         
     def commitpush(self):
         if ggcommit():

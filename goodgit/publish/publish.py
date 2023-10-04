@@ -37,7 +37,7 @@ def handle_existing_git_remote():
     """Handle the case where a git remote already exists."""
     is_git_initialized, remote_link = check_git_remote()
     if is_git_initialized:
-        console.print(f"A git remote link is already set up: [bold yellow]{remote_link}[/bold yellow]")
+        console.print(f"A git remote link is already set up: [bold orange1]{remote_link}[/bold orange1]")
         user_choice = select(
             "Would you like to push the code to this remote?",
             choices=["Yes", "No"]
