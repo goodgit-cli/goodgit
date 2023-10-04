@@ -36,6 +36,7 @@ from docopt import docopt
 from goodgit.web import gg_web
 from goodgit.ssh import add_ssh_account
 from goodgit.merge import merge_branches
+from .analytics import unblocking_logalytics
 from goodgit.search import git_grep_interactive
 from goodgit.publish import publish as ggpublish, clone_repo
 from goodgit.branch import list_branches, new_branch, switch_branch
@@ -138,6 +139,9 @@ class GoodGit:
 
 def main():
     args = docopt(__doc__, options_first=True)
+    
+    unblocking_logalytics(args)
+    
     gg = GoodGit()
     command = args['<command>']
     cmd_args = args['<args>']

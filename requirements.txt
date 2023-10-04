@@ -1,9 +1,9 @@
 fire
 -e
-halo
 linkify-it-py
 mdit-py-plugins
 pip
+remote-log
 setuptools
 swiftly-sys
 textual
