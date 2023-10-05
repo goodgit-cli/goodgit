@@ -124,7 +124,7 @@ def add(files=None):
             # Use path autocomplete for ease of use
             files = get_files_to_add()
     else:
-        print("[bold white]Files added.[/bold white]")
+        print("[bold green]Files added.[/bold green]")
     
     # Execute the 'git add' command
     git_add(files)
