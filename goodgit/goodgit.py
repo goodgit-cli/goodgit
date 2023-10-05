@@ -15,6 +15,7 @@ Commands:
     commit      Add, commit, push
     uncommit    Undo the last commit.
     merge       Merge branches.
+    pull        Pull from the current branch. Or specify the branch
     publish     Publish the repository to GitHub
     search      Search the git repository.
     setup       Setup SSH in 10secs. Multiple accounts supported
@@ -35,9 +36,9 @@ from docopt import docopt
 
 from goodgit.web import gg_web
 from goodgit.ssh import add_ssh_account
-from goodgit.merge import merge_branches
 from .analytics import unblocking_logalytics
 from goodgit.search import git_grep_interactive
+from goodgit.merge import merge_branches, pull_changes
 from goodgit.publish import publish as ggpublish, clone_repo
 from goodgit.branch import list_branches, new_branch, switch_branch
 from goodgit.timetravel import timetravel as ggtimetravel, apply_timetravel
@@ -101,6 +102,9 @@ class GoodGit:
 
     def merge(self):
         merge_branches()
+        
+    def pull(self, remote=None, branch=None):
+        pull_changes(remote, branch)
 
     def publish(self):
         ggpublish()

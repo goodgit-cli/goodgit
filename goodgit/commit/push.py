@@ -51,7 +51,7 @@ def push_to_remote(repo_path='.'):
         try:
             # Push changes
             repo.git.push('origin', branch_name)
-            print(f"Successfully pushed to origin/{branch_name}")
+            print(f"[bold green]Successfully pushed to origin/{branch_name}[/bold green]")
             return True
         except git.GitCommandError as e:
             print(f"Failed to push to origin/{branch_name}. Error: {e}")
