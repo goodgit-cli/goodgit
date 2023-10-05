@@ -2,6 +2,10 @@ import git
 import questionary
 from rich import print
 
+from .add import add
+from .commit import commit
+from goodgit.merge import pull_changes
+
 def push_to_remote(repo_path='.'):
     """Push changes to a remote Git repository with user confirmation."""
     repo = git.Repo(repo_path)
@@ -10,6 +14,14 @@ def push_to_remote(repo_path='.'):
     if not repo.remotes:
         print("[yellow]This is not a remote repository, can't push.[/yellow]")            
         return "Not Remote"
+    
+    status, files = pull_changes()
+    if status:
+        add(files)
+        commit()
+        
+    elif not status and files:
+        return False
     
     # Get the current branch name
     current_branch = repo.active_branch.name
@@ -32,7 +44,7 @@ def push_to_remote(repo_path='.'):
             confirm_push = questionary.confirm(f"Are you sure you want to push code from {branch_name}?").ask()
             
         else:
-            print("Push operation cancelled.")
+            print("Push cancelled.")
             return False
     
     if confirm_push:

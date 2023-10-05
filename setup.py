@@ -21,6 +21,7 @@ setup(
         'rich',
         'docopt',
         'halo',
+        'remote-log',
     ],
     entry_points={
         'console_scripts': [

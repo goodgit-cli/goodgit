@@ -40,6 +40,42 @@ def get_conflicted_files():
             conflicted_files.append(line.split(":")[1].strip())
     return conflicted_files
 
+def resolve_conflicts_in_file(file_path):
+    print(f"[yellow]Resolving conflicts in {file_path}...[/yellow]")
+    
+    conflict_and_context, conflict_start, conflict_end = get_conflict_and_context(file_path)
+    
+    payload = json.dumps({
+        "conflict_and_context": conflict_and_context,
+    })
+
+    headersList = {
+        "Accept": "*/*",
+        "User-Agent": "GoodGit",
+        "Content-Type": "application/json",
+    }
+
+    reqUrl = "https://orca-app-qmx5i.ondigitalocean.app/api/merge/"
+    response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+
+    if response.status_code == 200:
+        resolved_code = response.json()
+        print(f"[orange1]{resolved_code['explanation']}[/orange1]")
+        print("")
+        print(f"[turquoise2]{resolved_code['code']}[/turquoise2]")
+
+        merge_choice = questionary.confirm("Do you want to apply this merge resolution?").ask()
+        if merge_choice:
+            with open(file_path, 'r') as f:
+                lines = f.readlines()
+            lines = lines[:conflict_start] + [resolved_code['code']] + lines[conflict_end+1:]
+            with open(file_path, 'w') as f:
+                f.writelines(lines)
+            print(f"[green]Successfully resolved conflicts in {file_path}![/green]")
+    else:
+        print("[red]API call failed. Exiting.[/red]")
+
+
 def merge_branches(from_branch=None, to_branch=None):
     if not is_git_repo():
         print("[red]Not a git repository. Exiting.[/red]")
@@ -66,36 +102,5 @@ def merge_branches(from_branch=None, to_branch=None):
         return
 
     for file_path in conflicted_files:
-        print(f"[yellow]Resolving conflicts in {file_path}...[/yellow]")
-        
-        conflict_and_context, conflict_start, conflict_end = get_conflict_and_context(file_path)
-        
-        payload = json.dumps({
-            "conflict_and_context": conflict_and_context,
-        })
-
-        headersList = {
-            "Accept": "*/*",
-            "User-Agent": "GoodGit",
-            "Content-Type": "application/json",
-        }
-
-        reqUrl = "https://orca-app-qmx5i.ondigitalocean.app/api/merge/"
-        response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
-
-        if response.status_code == 200:
-            resolved_code = response.json()
-            print(f"[green]{resolved_code['explanation']}[/green]")
-            print(f"[blue]{resolved_code['code']}[/blue]")
-
-            merge_choice = questionary.confirm("Do you want to apply this merge resolution?").ask()
-            if merge_choice:
-                with open(file_path, 'r') as f:
-                    lines = f.readlines()
-                lines = lines[:conflict_start] + [resolved_code['code']] + lines[conflict_end+1:]
-                with open(file_path, 'w') as f:
-                    f.writelines(lines)
-                print(f"[green]Successfully resolved conflicts in {file_path}![/green]")
-        else:
-            print("[red]API call failed. Exiting.[/red]")
+        resolve_conflicts_in_file(file_path)
             

@@ -57,8 +57,10 @@ def apply_timetravel():
             repo.git.stash('drop')
         
         # create a commit to make sure all changes are taken to the present
-        repo.git.add('-A')
-        repo.git.commit('--allow-empty', '-m', f'Unsaved code from {commit_message}')
+        if uncommitted_changes:
+            repo.git.add('-A')
+            repo.git.commit('-m', f'Modified code from {commit_message}')
+            commit_message = f"~ {commit_message}"
         
         repo.git.checkout(current_branch)
 

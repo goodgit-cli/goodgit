@@ -9,11 +9,22 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import has_selection, Condition
 from prompt_toolkit.completion import Completer, Completion
 
+from .init import initialize_git_repo
+
 def git_unadd():
     """
     Executes the 'git reset' command to unstage all changes.
     """
     subprocess.run(["git", "reset"])
+    
+
+def is_git_repo():
+    """Check if the current directory is a git repository."""
+    try:
+        subprocess.run(["git", "status"], capture_output=True, check=True)
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 
 def validate_files(files):
@@ -87,6 +98,15 @@ def add(files=None):
     Parameters:
         files (None or str or list, optional): The files to be added to git. Defaults to None.
     """
+    # if not a git repo; ask users if they want to make it a git repo? if yes, run initialize_git_repo()
+    if not is_git_repo():
+        choice = questionary.confirm("This directory is not a git repository. Do you want to initialize it as one?").ask()
+        if choice:
+            initialize_git_repo()
+        else:
+            print("[red]Exiting as the directory is not a git repository.[/red]")
+            return False
+    
     # Validate the 'files' parameter
     if not validate_files(files):
         raise ValueError("Invalid 'files' parameter. Must be None, '*', '.', or a list of strings.")
@@ -104,7 +124,7 @@ def add(files=None):
             # Use path autocomplete for ease of use
             files = get_files_to_add()
     else:
-        print("[white]Adding files[/white]")
+        print("[bold white]Files added.[/bold white]")
     
     # Execute the 'git add' command
     git_add(files)

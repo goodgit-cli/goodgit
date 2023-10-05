@@ -78,7 +78,7 @@ def commit():
                 print(f"[red]Commit failed: {result.stderr}[/red]")
                 return False
             else:
-                print("[green]Commit successful![/green]")
+                print("[bold green]Commit successful![/bold green]")
                 return True
                 
         else:
