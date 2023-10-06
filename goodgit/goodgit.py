@@ -10,9 +10,9 @@ Options:
 
 Commands:
     init        Initiate Git Repo with main branch
-    add         Add files, commit, and push
+    add         Add files, AI commit, and push
     branch      List, switch, create new branches
-    commit      Add, commit, push
+    commit      Add, AI commit, push
     uncommit    Undo the last commit.
     merge       Merge branches.
     pull        Pull from the current branch. Or specify the branch
@@ -26,6 +26,9 @@ Commands:
 
     timetravel apply    Make a time travelled commit your present commit
     tt apply            Make a time travelled commit your present commit
+    
+Git:
+    All git commands work with "gg <command>" for when you really need the underlying powers of git.
 """
 
 import sys

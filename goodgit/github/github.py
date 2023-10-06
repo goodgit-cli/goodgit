@@ -83,7 +83,7 @@ def get_new_access_token(email):
     expires_in = int(data['expires_in'][0])
     interval = int(data['interval'][0])
 
-    print(f"Please go to [bold orange1]{verification_uri}[/bold yellow] and enter this code: [bold orange1]{user_code}[/bold yellow]")
+    print(f"Please go to [bold orange1]{verification_uri}[/bold orange1] and enter this code: [bold orange1]{user_code}[/bold orange1]")
     time.sleep(2)
     webbrowser.open(verification_uri)
 
