@@ -86,7 +86,7 @@ class GoodGit:
     def add(self, *args):
         if len(args) == 0:
             ggadd()
-        if args[0] in ['*', '.']:
+        elif args[0] in ['*', '.']:
             # The wild route: add all files
             ggadd("*")
         else:

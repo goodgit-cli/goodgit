@@ -6,11 +6,44 @@ import os
 
 def clone_repo(repo_link=None):
     config_path = os.path.expanduser("~/.ssh/goodgit/config.json")
-
-    # Load config file
-    with open(config_path, "r") as f:
-        config = json.load(f)
-
+    
+    # Check SSH connection first
+    result = subprocess.run(["ssh", "-T", "git@github.com"], capture_output=True, text=True)
+    
+    if "You've successfully authenticated" not in result.stderr:
+        print("SSH connection to GitHub failed.")
+        
+        # Since SSH failed, now check if config file exists
+        if not os.path.exists(config_path):
+            print("\033[91mConfig file does not exist.\033[0m")
+            
+            # Prompt to create new SSH account
+            questions = [
+                {
+                    'type': 'confirm',
+                    'name': 'create_account',
+                    'message': 'Do you want to create a new SSH account?',
+                    'default': False
+                }
+            ]
+            answers = prompt(questions)
+            if answers.get('create_account'):
+                # Import and run the function from your SSH module
+                from ..ssh.ssh import add_ssh_account
+                add_ssh_account()
+            return
+    else:
+        print("SSH connection to GitHub succeeded.")
+        
+    # If the config file exists, read it
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                config = json.load(f)
+        except Exception as e:
+            print(f"An error occurred while reading the config file: {e}")
+            return
+    
     # If repo_link is not provided, ask user for it
     if repo_link is None:
         questions = [
@@ -22,7 +55,7 @@ def clone_repo(repo_link=None):
         ]
         answers = prompt(questions)
         repo_link = answers['repo_link']
-
+        
     # Validate and possibly convert link
     if re.match(r"git@github\.com:[\w-]+/[\w-]+\.git", repo_link):
         print(f"SSH link provided: {repo_link}")
@@ -33,10 +66,10 @@ def clone_repo(repo_link=None):
         print(repo_link)
     else:
         print("Invalid link provided.")
-        return  # Exit function instead of entire script
-
+        return
+    
     # Check number of accounts in config
-    if len(config["accounts"]) > 1:
+    if os.path.exists(config_path) and len(config["accounts"]) > 1:
         email_options = [acc["email"] for acc in config["accounts"]]
         questions = [
             {
@@ -57,4 +90,8 @@ def clone_repo(repo_link=None):
     else:
         print(f"Cloning from {repo_link}")
         subprocess.run(["git", "clone", repo_link])
+
+# For demonstration
+if __name__ == "__main__":
+    clone_repo()
 
