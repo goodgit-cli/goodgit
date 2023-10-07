@@ -1,5 +1,4 @@
 fire
--e
 linkify-it-py
 mdit-py-plugins
 pip

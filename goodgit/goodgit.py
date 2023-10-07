@@ -31,8 +31,34 @@ Git:
     All git commands work with "gg <command>" for when you really need the underlying powers of git.
 """
 
-import sys
 import subprocess
+import platform
+
+def check_requirements():
+    os_type = platform.system()
+    
+    # Check for Git installation
+    try:
+        subprocess.run(["git", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except:
+        print("Git is not installed. Please install Git to use GoodGit.")
+        return False
+
+    if os_type == "Windows":
+        print("You're running Windows and Git is installed. Good to go!")
+    else:
+        pass
+
+    return True
+
+
+if check_requirements():
+    pass
+else:
+    print("Requirements not met. Exiting.")
+    exit(1)
+
+import sys
 import questionary
 from rich import print
 from docopt import docopt
