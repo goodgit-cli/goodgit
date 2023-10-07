@@ -15,8 +15,13 @@ from goodgit.github import fetch_github_username, retrieve_github_access_token, 
 
 console = Console()
 
+def check_ssh_connection():
+    result = subprocess.run(["ssh", "-T", "git@github.com"], capture_output=True, text=True)
+    if "You've successfully authenticated" not in result.stderr:
+        return False
+    return True
+
 def load_host_mapping():
-    """Load host mapping from the configuration file."""
     try:
         with open(os.path.expanduser("~/.ssh/goodgit/config.json"), "r") as f:
             data = json.load(f)
@@ -25,7 +30,6 @@ def load_host_mapping():
         return {}
 
 def load_accounts():
-    """Load accounts from the configuration file."""
     try:
         with open(os.path.expanduser("~/.ssh/goodgit/config.json"), "r") as f:
             data = json.load(f)
@@ -34,7 +38,6 @@ def load_accounts():
         return []
 
 def handle_existing_git_remote():
-    """Handle the case where a git remote already exists."""
     is_git_initialized, remote_link = check_git_remote()
     if is_git_initialized:
         console.print(f"A git remote link is already set up: [bold orange1]{remote_link}[/bold orange1]")
@@ -48,7 +51,6 @@ def handle_existing_git_remote():
     return False
 
 def select_email_from_accounts(accounts):
-    """Select an email account to use for GitHub operations."""
     if len(accounts) == 0:
         print("[red]No accounts found[/red]")
         email = add_ssh_account()
@@ -57,7 +59,6 @@ def select_email_from_accounts(accounts):
         else:
             print("[bold orange1]We weren't prepared for you to say no :([/bold orange1]")
             exit(1)
-                    
     elif len(accounts) == 1:
         selected_email = accounts[0]['email']
         console.print(f"Using the only available account: [bold green]{selected_email}[/bold green]")
@@ -68,27 +69,24 @@ def select_email_from_accounts(accounts):
         ).ask()
     return selected_email
 
-
 def push_to_repo(repo_name, username, selected_email, host_mapping):
-    """Push the local repository to the remote GitHub repository."""
     specific_host = host_mapping.get(selected_email, "github.com")
     console.print(f"Pushing to repo: [bold green]{repo_name}[/bold green], Username: [bold green]{username}[/bold green], Host: [bold green]{specific_host}[/bold green]")
     
     subprocess.run("git init", shell=True)
-    add()  # Custom 'git add' Python function
-    commit()  # Custom 'git commit' Python function
+    add()
+    commit()
     
     remaining_commands = [
         "git branch -M main",
         f"git remote add origin git@{specific_host}:{username}/{repo_name}.git",
         "git push -u origin main"
     ]
+    
     for cmd in remaining_commands:
         subprocess.run(cmd, shell=True)
 
 def create_and_push_new_repo(selected_email, host_mapping):
-    """Create a new GitHub repository and push the local code to it."""
-    
     access_token = get_new_access_token(selected_email)
     if not access_token:
         console.print("[bold red]Failed to get access token within the allowed time. Exiting.[/bold red]")
@@ -111,7 +109,6 @@ def create_and_push_new_repo(selected_email, host_mapping):
             console.print("[bold red]Name already exists. Let's try again with a different name.[/bold red]")
 
 def get_repo_details():
-    """Get the name and privacy setting for the new GitHub repository."""
     repo_name = text("Enter the name for your new GitHub repository:").ask()
     is_private = select(
         "Should the repository be private or public?",
@@ -120,10 +117,25 @@ def get_repo_details():
     return repo_name, is_private
 
 def publish():
-    """Main function to execute the script."""
-    host_mapping = load_host_mapping()
+    config_path = os.path.expanduser("~/.ssh/goodgit/config.json")
     
+    if not os.path.exists(config_path):
+        console.print("[red]Config file does not exist.[/red]")
+        
+        if check_ssh_connection():
+            console.print("[green]SSH connection to GitHub is already set up.[/green]")
+        else:
+            console.print("[red]SSH connection not established. Running add_ssh_account...[/red]")
+            email = add_ssh_account()
+            if email:
+                console.print(f"[green]Successfully added SSH account for {email}[/green]")
+            else:
+                console.print("[red]Failed to add SSH account. Exiting.[/red]")
+                exit(1)
+                
+    host_mapping = load_host_mapping()
     accounts = load_accounts()
+    
     if not handle_existing_git_remote():
         selected_email = select_email_from_accounts(accounts)
         if selected_email:
