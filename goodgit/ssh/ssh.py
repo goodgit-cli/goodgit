@@ -164,9 +164,6 @@ def github_device_auth(email=None):
             user_name = config_name
         else:
             user_name = get_github_username(access_token)
-            if user_name:
-                subprocess.run(["git", "config", "--global", "user.name", user_name])
-                subprocess.run(["git", "config", "--global", "user.email", email])
 
         print(f"Debug: Using email {email} for SSH key generation")  # Debug statement
 
@@ -234,6 +231,11 @@ def add_ssh_account():
                 make_default = prompt(make_default_question)['make_default']
                 if make_default:
                     update_ssh_config(username, make_default=True)
+                    
+                    if username:
+                        subprocess.run(["git", "config", "--global", "user.name", username])
+                        subprocess.run(["git", "config", "--global", "user.email", email])
+                        
             else:
                 if not is_default_account_set():
                     make_default = prompt(make_default_question)['make_default']
