@@ -96,10 +96,9 @@ def clone_repo(repo_link=None):
         
         repo_folder_name = new_repo_link.split("/")[1].split(".")[0]
         
-        subprocess.run(["cd", repo_folder_name])
-        
-        subprocess.run(["git", "config", "--local", "user.name", github_username])
-        subprocess.run(["git", "config", "--local", "user.email", selected_email])
+        subprocess.run(["git", "config", "--local", "user.name", github_username], cwd=repo_folder_name)
+        subprocess.run(["git", "config", "--local", "user.email", selected_email], cwd=repo_folder_name)
+
     else:
         print(f"Cloning from {repo_link}")
         subprocess.run(["git", "clone", repo_link])
