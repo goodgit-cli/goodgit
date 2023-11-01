@@ -8,7 +8,7 @@ from questionary import prompt, Choice
 
 # Assuming these modules exist and work as you described
 from goodgit.utils import get_detailed_os_name
-from goodgit.github import get_new_access_token, get_github_username, add_ssh_key_to_github
+from goodgit.github import get_new_access_token, get_github_username, add_ssh_key_to_github, retrieve_github_access_token
 
 
 def load_accounts_from_config():
@@ -233,7 +233,10 @@ def add_ssh_account():
                     update_ssh_config(username, make_default=True)
                     
                     if username:
-                        subprocess.run(["git", "config", "--global", "user.name", username])
+                        access_token = retrieve_github_access_token(email)
+                        github_username = get_github_username(access_token)
+                        
+                        subprocess.run(["git", "config", "--global", "user.name", github_username])
                         subprocess.run(["git", "config", "--global", "user.email", email])
                         
             else:

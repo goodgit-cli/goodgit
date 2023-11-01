@@ -4,6 +4,8 @@ import subprocess
 from questionary import prompt
 import os
 
+from goodgit.github import retrieve_github_access_token, get_github_username
+
 def clone_repo(repo_link=None):
     config_path = os.path.expanduser("~/.ssh/goodgit/config.json")
     
@@ -81,6 +83,13 @@ def clone_repo(repo_link=None):
         ]
         answers = prompt(questions)
         selected_email = answers['email']
+        
+        access_token = retrieve_github_access_token(selected_email)
+        github_username = get_github_username(access_token)
+        
+        subprocess.run(["git", "config", "user.name", github_username])
+        subprocess.run(["git", "config", "user.email", selected_email])
+        
         selected_host = next(acc["host"] for acc in config["accounts"] if acc["email"] == selected_email)
         
         # Replace github.com with selected host
