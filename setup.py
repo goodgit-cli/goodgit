@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='goodgit',
-    version='0.1.18',
+    version='0.1.19',
     packages=find_packages(),
     description='Git; for humans',
     long_description=long_description,
