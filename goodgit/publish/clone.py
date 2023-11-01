@@ -87,15 +87,19 @@ def clone_repo(repo_link=None):
         access_token = retrieve_github_access_token(selected_email)
         github_username = get_github_username(access_token)
         
-        subprocess.run(["git", "config", "--local", "user.name", github_username])
-        subprocess.run(["git", "config", "--local", "user.email", selected_email])
-        
         selected_host = next(acc["host"] for acc in config["accounts"] if acc["email"] == selected_email)
         
         # Replace github.com with selected host
         new_repo_link = repo_link.replace("github.com", selected_host)
         print(f"Cloning from {new_repo_link}")
         subprocess.run(["git", "clone", new_repo_link])
+        
+        repo_folder_name = new_repo_link.split("/")[1].split(".")[0]
+        
+        subprocess.run(["cd", repo_folder_name])
+        
+        subprocess.run(["git", "config", "--local", "user.name", github_username])
+        subprocess.run(["git", "config", "--local", "user.email", selected_email])
     else:
         print(f"Cloning from {repo_link}")
         subprocess.run(["git", "clone", repo_link])
