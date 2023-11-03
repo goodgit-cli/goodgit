@@ -1,6 +1,6 @@
 # GoodGit: Git, but with a Human Touch 🎉
 
-### GoodGit Intro Video
+### It only takes 4 minutes, not 4 years to master git! 😎
 
 https://github.com/brainspoof/goodgit/assets/78320447/e8115809-c000-4f19-a941-e606a0cca711
 
@@ -26,8 +26,8 @@ GoodGit is the brainchild of community frustrations – a chorus of developers w
    
 ## Prerequisites 🛠
 
-- Python (We're talking code, not constrictors.)
-- Pip (Python's package handler, not your childhood friend.)
+- Python
+- Pip
 - Internet Connection (It's the digital era, after all!)
 - A Pair of Hands (Preferably attached to a human who can type.)
 
