@@ -1,4 +1,4 @@
-# GoodGit: Git, but with a Human Touch 🎉
+# GoodGit: A better Git experience. 🎉
 
 ### It only takes 4 minutes, not 4 years to master git! 😎
 
