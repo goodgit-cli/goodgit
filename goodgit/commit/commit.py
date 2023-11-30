@@ -59,7 +59,7 @@ def commit():
         "Content-Type": "application/json",
     }
 
-    reqUrl = "https://orca-app-qmx5i.ondigitalocean.app/api/commit/"
+    reqUrl = "https://api.goodgit.io/api/commit/"
     response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
     
     spinner.stop()

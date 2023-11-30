@@ -55,7 +55,7 @@ def resolve_conflicts_in_file(file_path):
         "Content-Type": "application/json",
     }
 
-    reqUrl = "https://orca-app-qmx5i.ondigitalocean.app/api/merge/"
+    reqUrl = "https://api.goodgit.io/api/merge/"
     response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
 
     if response.status_code == 200:

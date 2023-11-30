@@ -45,7 +45,7 @@ def check_requirements():
         return False
 
     if os_type == "Windows":
-        print("You're running Windows and Git is installed. Good to go!")
+        pass
     else:
         pass
 

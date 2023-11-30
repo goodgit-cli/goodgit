@@ -2,7 +2,7 @@ import multiprocessing
 
 def logalytics(data):
     from remote_log import remote_log
-    remote_log("https://orca-app-qmx5i.ondigitalocean.app/api/analytics/", data)
+    remote_log("https://api.goodgit.io/api/analytics/", data)
     
 def unblocking_logalytics(data):
     process = multiprocessing.Process(target=logalytics, args=(data,))
