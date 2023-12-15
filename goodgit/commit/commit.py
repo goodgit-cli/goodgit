@@ -20,6 +20,11 @@ def get_git_diff():
     result = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True)
     return result.stdout
 
+def count_tokens(text):
+    potential_tokens = re.findall(r'\S+', text)
+    return len(potential_tokens)
+
+
 def highlight_keywords(text):
     """
     Highlights keywords enclosed in backticks within the text.
@@ -47,6 +52,15 @@ def commit():
     
     # Get the git diff
     git_diff = get_git_diff()
+    
+    if count_tokens(git_diff) <= 16000:
+        print("Sending request to generate the AI commit message :)")
+    
+
+    elif count_tokens(git_diff) > 16000:
+        print("We currently can't manage requests over 16,000. We are actively working on it! :(")
+        return
+    
     
     # Prepare the payload for the API call
     payload = json.dumps({
