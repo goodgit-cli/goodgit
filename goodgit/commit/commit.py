@@ -42,13 +42,6 @@ def commit():
     Main function to handle the git commit operation.
     """
     repo = git.Repo(".")
-    if not repo.is_dirty():
-        print("[green]All clean, Nothing to commit[/green]")
-        return False
-    
-    spinner = Halo(text='Baking your commit', spinner='moon')
-    
-    spinner.start()
     
     # Get the git diff
     git_diff = get_git_diff()
@@ -60,6 +53,14 @@ def commit():
     elif count_tokens(git_diff) > 16000:
         print("We currently can't manage requests over 16,000. We are actively working on it! :(")
         return
+
+    if not repo.is_dirty():
+        print("[green]All clean, Nothing to commit[/green]")
+        return False
+    
+    spinner = Halo(text='Baking your commit', spinner='moon')
+    
+    spinner.start()
     
     
     # Prepare the payload for the API call
