@@ -20,10 +20,6 @@ def get_git_diff():
     result = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True)
     return result.stdout
 
-def count_tokens(text):
-    potential_tokens = re.findall(r'\S+', text)
-    return len(potential_tokens)
-
 
 def highlight_keywords(text):
     """
@@ -45,14 +41,6 @@ def commit():
     
     # Get the git diff
     git_diff = get_git_diff()
-    
-    if count_tokens(git_diff) <= 16000:
-        print("Sending request to generate the AI commit message :)")
-    
-
-    elif count_tokens(git_diff) > 16000:
-        print("We currently can't manage requests over 16,000. We are actively working on it! :(")
-        return
 
     if not repo.is_dirty():
         print("[green]All clean, Nothing to commit[/green]")
@@ -85,9 +73,21 @@ def commit():
         print(f"[bold orange1]{highlight_keywords(commit_json['subject'])}[/bold orange1]")
         print(f"[white]{highlight_keywords(commit_json['description'])}[/white]")
 
+        # New feature: Option to edit commit message
+        edit_choice = questionary.confirm("Do you want to edit this commit message?").ask()
+        if edit_choice:
+            # Users can edit the commit subject and description
+            commit_subject = questionary.text("Edit commit subject:", default=commit_json['subject']).ask()
+            commit_description = questionary.text("Edit commit description:", default=commit_json['description']).ask()
+
+        else:
+            commit_subject = commit_json['subject']
+            commit_description = commit_json['description']
+
+        # Confirm the final commit
         commit_choice = questionary.confirm("Do you want to commit with this message?").ask()
         if commit_choice:
-            result = subprocess.run(["git", "commit", "-m", commit_json['subject'], "-m", commit_json['description']], capture_output=True, text=True)
+            result = subprocess.run(["git", "commit", "-m", commit_subject, "-m", commit_description], capture_output=True, text=True)
             if result.returncode != 0:
                 git_unadd()
                 print(f"[red]Commit failed: {result.stderr}[/red]")
@@ -101,5 +101,5 @@ def commit():
             print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
             return False
     else:
-        print("[red]API call failed. Exiting.[/red]")
+        print("[red]Error fetching commit data[/red]")
         return False
