@@ -73,20 +73,26 @@ def commit():
         print(f"[bold orange1]{highlight_keywords(commit_json['subject'])}[/bold orange1]")
         print(f"[white]{highlight_keywords(commit_json['description'])}[/white]")
 
-        # New feature: Option to edit commit message
-        edit_choice = questionary.confirm("Do you want to edit this commit message?").ask()
-        if edit_choice:
+        # New feature: Option to commit or edit the commit message in a single step
+        commit_choice = questionary.select("Do you want to commit the changes?", choices=['Yes', 'No', 'Edit']).ask()
+
+        if commit_choice == 'Yes':
+            # Commit without editing
+            result = subprocess.run(["git", "commit", "-m", commit_json['subject'], "-m", commit_json['description']], capture_output=True, text=True)
+            if result.returncode != 0:
+                git_unadd()
+                print(f"[red]Commit failed: {result.stderr}[/red]")
+                return False
+            else:
+                print("[bold green]Commit successful![/bold green]")
+                return True
+
+        elif commit_choice == 'Edit':
             # Users can edit the commit subject and description
             commit_subject = questionary.text("Edit commit subject:", default=commit_json['subject']).ask()
             commit_description = questionary.text("Edit commit description:", default=commit_json['description']).ask()
 
-        else:
-            commit_subject = commit_json['subject']
-            commit_description = commit_json['description']
-
-        # Confirm the final commit
-        commit_choice = questionary.confirm("Do you want to commit with this message?").ask()
-        if commit_choice:
+            # Proceed to commit with the edited message
             result = subprocess.run(["git", "commit", "-m", commit_subject, "-m", commit_description], capture_output=True, text=True)
             if result.returncode != 0:
                 git_unadd()
@@ -95,11 +101,14 @@ def commit():
             else:
                 print("[bold green]Commit successful![/bold green]")
                 return True
-                
+
         else:
+            # Handle 'No' choice
             git_unadd()
             print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
             return False
+
     else:
         print("[red]Error fetching commit data[/red]")
         return False
+
