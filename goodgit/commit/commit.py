@@ -104,9 +104,25 @@ def commit():
 
         else:
             # Handle 'No' choice
-            git_unadd()
-            print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
-            return False
+            # New feature implementation: Additional options after 'No'
+            further_choice = questionary.select(
+                "Choose an option:",
+                choices=['Do not commit', 'Regenerate commit message']
+            ).ask()
+
+            if further_choice == 'Do not commit':
+                git_unadd()
+                print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
+                return False
+
+            elif further_choice == 'Regenerate commit message':
+                # Repeat the process to generate a new commit message
+                return commit()  # Calling the commit function again
+
+            else:
+                git_unadd()
+                print("[yellow]Commit cancelled. All changes have been unstaged.[/yellow]")
+                return False
 
     else:
         print("[red]Error fetching commit data[/red]")
