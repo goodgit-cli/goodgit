@@ -36,11 +36,29 @@ def store_github_access_token(token, email):
         
 def retrieve_github_access_token(email):
     token_file_path = os.path.expanduser("~/.ssh/goodgit/access_tokens.json")
+    
     if os.path.exists(token_file_path):
         with open(token_file_path, "r") as f:
             tokens = json.load(f)
-            return tokens.get(email)
+
+            # Append the suffix to the email key
+            email_key = f"{email} (github.com)"
+
+            if email_key in tokens:
+                token = tokens[email_key]
+                
+                # Verify that the token is a valid string
+                if isinstance(token, str):
+                    return token
+                else:
+                    print("Token found is not a string for:", email_key)
+            else:
+                print("Email key not found in tokens:", email_key)
+    else:
+        print("")
+    
     return None
+
 
 def create_github_repo(access_token, repo_name, is_private):
     headers = {'Authorization': f'token {access_token}'}
@@ -55,12 +73,13 @@ def create_github_repo(access_token, repo_name, is_private):
 def get_github_username(token):
     url = "https://api.github.com/user"
     headers = {"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
-    r = requests.get(url, headers=headers)
-    if r.status_code == 200:
-        return r.json().get("name", "Unknown")
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json().get("login", "Unknown")
     else:
-        print("Failed to fetch GitHub username.")
+        print(f"Failed to fetch GitHub username. Status code: {response.status_code}.")
         return None
+
 
 def get_new_access_token(email):
     access_token = retrieve_github_access_token(email)

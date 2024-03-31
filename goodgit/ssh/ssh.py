@@ -164,9 +164,7 @@ def github_device_auth(email=None):
             user_name = config_name
         else:
             user_name = get_github_username(access_token)
-
-        print(f"Debug: Using email {email} for SSH key generation")  # Debug statement
-
+        
         os_name = get_detailed_os_name()
         computer_name = platform.node()
         title = f"GoodGit-{os_name}-{computer_name}-{user_name}"
